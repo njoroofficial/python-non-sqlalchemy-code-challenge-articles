@@ -1,11 +1,11 @@
 class Article:
-    all_articles = [] # track every article created
+    all = [] # track every article created
 
     def __init__(self, author, magazine, title):
         self.author = author
         self.magazine = magazine
         self.title = title
-        Article.all_articles.append(self)
+        Article.all.append(self)
 
     @property
     def title(self):
@@ -52,16 +52,19 @@ class Author:
             self._name = author_name
 
     def articles(self):
-        return [article for article in Article.all_articles if article.author == self]
+        return [article for article in Article.all if article.author == self]
 
     def magazines(self):
         return list(set([article.magazine for article in self.articles()]))
 
     def add_article(self, magazine, title):
-        pass
+        return Article(self, magazine, title)
 
     def topic_areas(self):
-        pass
+        mags = self.magazines()
+        if not mags:
+            return None
+        return list(set([mag.category for mag in mags]))
 
 class Magazine:
     def __init__(self, name, category):
@@ -93,7 +96,15 @@ class Magazine:
         return list(set([article.author for article in self.articles()]))
 
     def article_titles(self):
-        pass
+        articles = self.articles()
+        if not articles:
+            return None
+        return [article.title for article in articles]
 
     def contributing_authors(self):
-        pass
+        authors = [article.author for article in self.articles()]
+        if not authors:
+            return None
+        # Filter authors who appear more than 2 times
+        result = [author for author in set(authors) if authors.count(author) > 2]
+        return result if result else None
